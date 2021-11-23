@@ -1,0 +1,126 @@
+---
+title: "DE Education"
+author: "Alexis Merritt"
+date: "11/22/2021"
+output:
+   prettydoc::html_pretty:
+    theme: cayman
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Delaware Standardized Test Scores for K-12
+***
+##### Alexis Merritt - Foundations of R
+```{r, message=FALSE, echo=FALSE}
+
+library(tidyverse)
+```
+
+
+```{r, echo=FALSE}
+DE_Test_Scores <- read.csv(file = '/Users/alexismerritt/Documents/FoundationsR/DE_Education/Student_Assessment_Performance.csv')
+```
+
+## Trends in DE State Testing From 2015-2021
+*** 
+####  From the following graph, we can see the trends in the last 6 years of Delaware's standardized testing administration. We can also use this graph to see where older tests were abandoned in favor of a new form (i.e. DCAS's switch to DeSSA). It is important to track this evolution in testing in order to determine the efficacy of standardized testing, as well as identifying how external factors can effect student's testing ability such as the COVID-19 pandemic and the movement to online schooling.
+```{r, warning=FALSE, echo=FALSE}
+
+
+
+DE_Test_Scores %>%
+  ggplot(aes(x = School.Year,
+             fill = Assessment.Name)) +
+  geom_bar(position = "dodge")+
+  labs(x = "School Year", 
+       y = "Count of Tests Administered",
+       title = "Count of Standardized Tests Administered in DE")
+  
+  
+```
+
+## Testing Proficiency & the Pandemic
+***
+#### We can also view interesting trends when factoring the average proficiency from year to year across all tests. We can see that, using the example from above, that the switch from DCAS to DeSSA may not have been favorable for many students as the percent proficiency dropped steeply once these tests were switched. You can also see here that test proficiency peaked for the annual EL ACCESS and SAT's in 2020 following lockdown but the trends steeply dropped going into 2021 as schools continued with online schooling. You can also see an interesting trend across all grades concerning the Smarter Balanced Summative Assessment where proficiency starts to steadily decline starting in 2019. 
+```{r, warning=FALSE, echo=FALSE}
+
+
+
+DE_Test_Scores %>% 
+  ggplot(aes(x = School.Year,
+             y = PctProficient,
+             fill = Assessment.Name,
+             color = Assessment.Name)) +
+  geom_line(stat = "summary",
+           fun = "mean",
+           #position = "dodge"
+           ) +
+  labs(x = "School Year",
+       y = "Percent Proficient (%)",
+       title = "DE Student Proficiency in Standardized Tests")
+
+
+```
+
+```{r, warning=FALSE, echo=FALSE}
+
+DE_Test_Scores[DE_Test_Scores == "Twelfth"] <- "12th Grade"
+
+DE_Test_Scores %>% 
+  ggplot(aes(x = School.Year,
+             y = PctProficient,
+             fill = Assessment.Name,
+           color = Assessment.Name)) +
+  geom_line(stat = "summary",
+           fun = "mean"
+           #position = "dodge"
+           ) +
+  facet_wrap(. ~Grade, ncol = 2) +
+  labs(x = "School Year",
+       y = "Percent Proficient (%)",
+       title = "DE Student Proficiency in Standardized Tests by Grade")
+  
+  
+  
+```
+
+***
+## Testing Proficiency & Demographic Factors
+***
+#### Another very important aspect to look at in standardized test evaluations is the demographics of the children taking the test. In order to ensure equitable access to education we should see that test scores are fairly consistent across all demographics, even when accounting for population densities. Consistent significant differences between demographics may show that there needs to be community intervention to ensure everyone has the ability to learn and grow with their peers.
+```{r, warning=FALSE, echo=FALSE}
+DE_Test_Scores %>% 
+  ggplot(aes(x = School.Year,
+             y = PctProficient,
+             fill = Assessment.Name,
+           color = Assessment.Name)) +
+  geom_line(stat = "summary",
+           fun = "mean"
+           #position = "dodge"
+           ) +
+  facet_wrap(. ~Race, ncol = 2) +
+  labs(x = "School Year",
+       y = "Percent Proficient (%)",
+       title = "DE Student Proficiency in Standardized Tests by Race")
+```
+
+
+```{r, warning=FALSE, echo=FALSE}
+DE_Test_Scores %>% 
+  ggplot(aes(x = School.Year,
+             y = PctProficient,
+             fill = Assessment.Name,
+           color = Assessment.Name)) +
+  geom_line(stat = "summary",
+           fun = "mean"
+           #position = "dodge"
+           ) +
+  facet_wrap(. ~Gender, nrow = 1) +
+  labs(x = "School Year",
+       y = "Percent Proficient (%)",
+       title = "DE Student Proficiency in Standardized Tests by Gender")
+```
+
